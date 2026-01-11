@@ -17,7 +17,7 @@ export default function Home() {
   const [currentPage, setCurrentPage] = useState(1)
   const [categoryPages, setCategoryPages] = useState<Record<string, number>>({})
   const [selectedCategorySlugs, setSelectedCategorySlugs] = useState<string[]>([])
-  const postsPerPage = 90 // 6列 × 15行
+  const postsPerPage = 60 // 6列 × 10行
   const categoryPostsPerPage = 12 // カテゴリごとのページネーション（6列 × 2行）
   const maxCategoriesOnHome = 30 // トップページに表示する最大カテゴリ数
 
