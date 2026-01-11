@@ -5,7 +5,6 @@ import Sidebar from '@/components/Sidebar'
 import CategoryContent from '@/components/CategoryContent'
 import ScrollToTop from '@/components/ScrollToTop'
 import { getCategorySlugMap, getPostsByCategorySlug } from '@/data/posts'
-import { getCategoryDescription } from '@/data/categories'
 
 interface CategoryPageProps {
   params: { slug: string }
@@ -23,7 +22,6 @@ export default function CategoryPage({ params }: CategoryPageProps) {
   const categorySlug = params.slug
   const categoryMap = getCategorySlugMap()
   const category = categoryMap[categorySlug]
-  const categoryDescription = getCategoryDescription(categorySlug)
 
   // カテゴリーslugでフィルタリング
   const categoryPosts = getPostsByCategorySlug(categorySlug)
@@ -61,9 +59,6 @@ export default function CategoryPage({ params }: CategoryPageProps) {
                   人気順 • 全{categoryPosts.length}件
                 </div>
               </div>
-              <p className="text-lg text-gray max-w-3xl leading-relaxed">
-                {categoryDescription}
-              </p>
             </div>
 
             {/* Posts Grid */}
