@@ -17,6 +17,7 @@ export default function Home() {
   const [currentPage, setCurrentPage] = useState(1)
   const [categoryPages, setCategoryPages] = useState<Record<string, number>>({})
   const [selectedCategorySlugs, setSelectedCategorySlugs] = useState<string[]>([])
+  const [mounted, setMounted] = useState(false)
   const postsPerPage = 60 // 6列 × 10行
   const categoryPostsPerPage = 12 // カテゴリごとのページネーション（6列 × 2行）
   const maxCategoriesOnHome = 30 // トップページに表示する最大カテゴリ数
@@ -47,6 +48,7 @@ export default function Home() {
 
   // 初回レンダリング時にランダムに30カテゴリを選択
   useEffect(() => {
+    setMounted(true)
     const allCategorySlugs = Object.keys(categoryMap)
     const shuffled = [...allCategorySlugs].sort(() => Math.random() - 0.5)
     setSelectedCategorySlugs(shuffled.slice(0, maxCategoriesOnHome))
@@ -182,10 +184,10 @@ export default function Home() {
             </section>
 
             {/* Category Sections - 検索時は非表示 */}
-            {!searchQuery && displayedCategories.map(({ categorySlug, category, posts: categoryPostsList, totalPosts, currentPage: catPage, totalPages: catTotalPages }, idx) => (
+            {!searchQuery && mounted && displayedCategories.map(({ categorySlug, category, posts: categoryPostsList, totalPosts, currentPage: catPage, totalPages: catTotalPages }, idx) => (
               <section
                 key={categorySlug}
-                className="mb-16 animate-fadeInUp opacity-0"
+                className="mb-16 animate-fadeInUp"
                 style={{ animationDelay: `${0.1 + idx * 0.05}s` }}
               >
                 <div className="flex items-center justify-between mb-8">
