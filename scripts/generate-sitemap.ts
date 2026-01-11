@@ -8,8 +8,16 @@ const DOMAIN = 'https://your-domain.com'; // TODO: 実際のドメインに変�
 // 出力先
 const OUTPUT_PATH = path.join(__dirname, '../public/sitemap.xml');
 
+// ページ情報の型定義
+interface SitemapPage {
+  url: string
+  lastmod?: string
+  changefreq: string
+  priority: string
+}
+
 // 静的ページのURL
-const staticPages = [
+const staticPages: SitemapPage[] = [
   { url: '/', changefreq: 'daily', priority: '1.0' },
   { url: '/contact/', changefreq: 'monthly', priority: '0.5' },
   { url: '/privacy/', changefreq: 'monthly', priority: '0.3' },
@@ -18,7 +26,7 @@ const staticPages = [
 ];
 
 // 投稿ページのURL
-const postPages = posts.map(post => ({
+const postPages: SitemapPage[] = posts.map(post => ({
   url: `/posts/${post.slug}/`,
   lastmod: post.date,
   changefreq: 'weekly',
@@ -27,7 +35,7 @@ const postPages = posts.map(post => ({
 
 // カテゴリページのURL
 const categoryMap = getCategorySlugMap();
-const categoryPages = Object.keys(categoryMap).map(slug => ({
+const categoryPages: SitemapPage[] = Object.keys(categoryMap).map(slug => ({
   url: `/category/${slug}/`,
   changefreq: 'daily',
   priority: '0.7',
