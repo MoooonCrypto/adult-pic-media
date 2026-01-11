@@ -2,14 +2,30 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { posts, getCategorySlugMap } from '@/data/posts'
 
 export default function Sidebar() {
   const [searchQuery, setSearchQuery] = useState('')
+  const router = useRouter()
   const categoryMap = getCategorySlugMap()
 
   // 女優名のユニークリストを取得
   const actresses = Array.from(new Set(posts.map(post => post.actress))).sort()
+
+  // 検索機能
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (searchQuery.trim()) {
+      // 検索クエリをURLエンコードしてトップページに遷移
+      router.push(`/?search=${encodeURIComponent(searchQuery.trim())}`)
+    }
+  }
+
+  // 女優名クリック時の処理
+  const handleActressClick = (actress: string) => {
+    router.push(`/?search=${encodeURIComponent(actress)}`)
+  }
 
   return (
     <aside className="space-y-4 animate-fadeInUp opacity-0 stagger-2">
@@ -21,7 +37,7 @@ export default function Sidebar() {
           </svg>
           検索
         </h3>
-        <div className="relative">
+        <form onSubmit={handleSearch} className="relative">
           <input
             type="text"
             placeholder="女優名で検索..."
@@ -29,10 +45,12 @@ export default function Sidebar() {
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full px-3 py-2 bg-white/80 border-2 border-white/40 rounded-xl focus:outline-none focus:border-[#1a1a1a] text-charcoal placeholder:text-gray/50 transition-all duration-300 text-sm"
           />
-          <svg className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-        </div>
+          <button type="submit" className="absolute right-3 top-1/2 -translate-y-1/2">
+            <svg className="w-4 h-4 text-gray/40 hover:text-[#000000] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </button>
+        </form>
       </div>
 
       {/* カテゴリ */}
@@ -81,7 +99,10 @@ export default function Sidebar() {
         <ul className="space-y-1.5 max-h-72 overflow-y-auto pr-2 custom-scrollbar">
           {actresses.map(actress => (
             <li key={actress}>
-              <button className="w-full text-left px-3 py-2 rounded-lg text-gray hover:bg-white/60 hover:text-[#000000] text-sm font-medium transition-all duration-200">
+              <button
+                onClick={() => handleActressClick(actress)}
+                className="w-full text-left px-3 py-2 rounded-lg text-gray hover:bg-white/60 hover:text-[#000000] text-sm font-medium transition-all duration-200"
+              >
                 {actress}
               </button>
             </li>

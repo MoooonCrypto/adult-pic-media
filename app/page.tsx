@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
+import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
@@ -11,6 +12,8 @@ import { posts, getCategorySlugMap } from '@/data/posts'
 import { Post } from '@/types/Post'
 
 export default function Home() {
+  const searchParams = useSearchParams()
+  const searchQuery = searchParams?.get('search') || ''
   const [currentPage, setCurrentPage] = useState(1)
   const [categoryPages, setCategoryPages] = useState<Record<string, number>>({})
   const [selectedCategorySlugs, setSelectedCategorySlugs] = useState<string[]>([])
@@ -18,10 +21,20 @@ export default function Home() {
   const categoryPostsPerPage = 12 // カテゴリごとのページネーション（6列 × 2行）
   const maxCategoriesOnHome = 30 // トップページに表示する最大カテゴリ数
 
-  // ページネーション
-  const totalPages = Math.ceil(posts.length / postsPerPage)
+  // 検索クエリでフィルタリング
+  const filteredPosts = useMemo(() => {
+    if (!searchQuery) return posts
+    return posts.filter(post =>
+      post.actress.includes(searchQuery) ||
+      post.title.includes(searchQuery) ||
+      post.category.includes(searchQuery)
+    )
+  }, [searchQuery])
+
+  // ページネーション（検索結果に基づく）
+  const totalPages = Math.ceil(filteredPosts.length / postsPerPage)
   const startIndex = (currentPage - 1) * postsPerPage
-  const paginatedPosts = posts.slice(startIndex, startIndex + postsPerPage)
+  const paginatedPosts = filteredPosts.slice(startIndex, startIndex + postsPerPage)
 
   // カテゴリページの取得・設定
   const getCategoryPage = (categorySlug: string) => categoryPages[categorySlug] || 1
@@ -38,6 +51,11 @@ export default function Home() {
     const shuffled = [...allCategorySlugs].sort(() => Math.random() - 0.5)
     setSelectedCategorySlugs(shuffled.slice(0, maxCategoriesOnHome))
   }, [])
+
+  // 検索クエリが変更されたらページをリセット
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [searchQuery])
 
   // 選択されたカテゴリの投稿データ（ページネーション対応）
   const displayedCategories = useMemo(() => {
@@ -73,7 +91,7 @@ export default function Home() {
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
                 <div>
                   <h2 className="text-3xl sm:text-4xl font-bold text-charcoal mb-2">
-                    すべての投稿
+                    {searchQuery ? `検索結果: "${searchQuery}"` : 'すべての投稿'}
                   </h2>
                   <div className="h-1 w-20 bg-gradient-to-r from-[#000000] to-[#2d2d2d] rounded-full"></div>
                 </div>
@@ -81,7 +99,7 @@ export default function Home() {
                   <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M3 3a1 1 0 000 2h11a1 1 0 100-2H3zM3 7a1 1 0 000 2h5a1 1 0 000-2H3zM3 11a1 1 0 100 2h4a1 1 0 100-2H3zM13 16a1 1 0 102 0v-5.586l1.293 1.293a1 1 0 001.414-1.414l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 101.414 1.414L13 10.414V16z" />
                   </svg>
-                  人気順 • 全{posts.length}件
+                  {searchQuery ? `${filteredPosts.length}件` : `人気順 • 全${posts.length}件`}
                 </div>
               </div>
 
@@ -163,8 +181,8 @@ export default function Home() {
               )}
             </section>
 
-            {/* Category Sections */}
-            {displayedCategories.map(({ categorySlug, category, posts: categoryPostsList, totalPosts, currentPage: catPage, totalPages: catTotalPages }, idx) => (
+            {/* Category Sections - 検索時は非表示 */}
+            {!searchQuery && displayedCategories.map(({ categorySlug, category, posts: categoryPostsList, totalPosts, currentPage: catPage, totalPages: catTotalPages }, idx) => (
               <section
                 key={categorySlug}
                 className="mb-16 animate-fadeInUp opacity-0"
