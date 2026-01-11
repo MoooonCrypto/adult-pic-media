@@ -16,8 +16,6 @@ export default function Home() {
   const searchQuery = searchParams?.get('search') || ''
   const [currentPage, setCurrentPage] = useState(1)
   const [categoryPages, setCategoryPages] = useState<Record<string, number>>({})
-  const [selectedCategorySlugs, setSelectedCategorySlugs] = useState<string[]>([])
-  const [mounted, setMounted] = useState(false)
   const postsPerPage = 60 // 6列 × 10行
   const categoryPostsPerPage = 12 // カテゴリごとのページネーション（6列 × 2行）
   const maxCategoriesOnHome = 30 // トップページに表示する最大カテゴリ数
@@ -46,13 +44,11 @@ export default function Home() {
   // カテゴリマップを取得
   const categoryMap = getCategorySlugMap()
 
-  // 初回レンダリング時にランダムに30カテゴリを選択
-  useEffect(() => {
-    setMounted(true)
+  // カテゴリを固定順（アルファベット順）で取得
+  const selectedCategorySlugs = useMemo(() => {
     const allCategorySlugs = Object.keys(categoryMap)
-    const shuffled = [...allCategorySlugs].sort(() => Math.random() - 0.5)
-    setSelectedCategorySlugs(shuffled.slice(0, maxCategoriesOnHome))
-  }, [])
+    return allCategorySlugs.slice(0, maxCategoriesOnHome)
+  }, [categoryMap, maxCategoriesOnHome])
 
   // 検索クエリが変更されたらページをリセット
   useEffect(() => {
@@ -184,11 +180,10 @@ export default function Home() {
             </section>
 
             {/* Category Sections - 検索時は非表示 */}
-            {!searchQuery && mounted && displayedCategories.map(({ categorySlug, category, posts: categoryPostsList, totalPosts, currentPage: catPage, totalPages: catTotalPages }, idx) => (
+            {!searchQuery && displayedCategories.map(({ categorySlug, category, posts: categoryPostsList, totalPosts, currentPage: catPage, totalPages: catTotalPages }, idx) => (
               <section
                 key={categorySlug}
-                className="mb-16 animate-fadeInUp"
-                style={{ animationDelay: `${0.1 + idx * 0.05}s` }}
+                className="mb-16"
               >
                 <div className="flex items-center justify-between mb-8">
                   <div>

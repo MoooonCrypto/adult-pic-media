@@ -35,16 +35,21 @@ export default function EncyclopediaCard({ post, priority = false }: Encyclopedi
             onLoad={() => setImageLoaded(true)}
           />
 
-          {/* Multi-layer Gradient Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
-          <div className="absolute inset-0 bg-gradient-to-br from-[#000000]/20 via-transparent to-[#2d2d2d]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          {/* Multi-layer Gradient Overlay - 画像読み込み後に表示 */}
+          {imageLoaded && (
+            <>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
+              <div className="absolute inset-0 bg-gradient-to-br from-[#000000]/20 via-transparent to-[#2d2d2d]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            </>
+          )}
         </div>
 
         {/* Decorative Border */}
         <div className="absolute inset-0 rounded-2xl ring-1 ring-white/20 group-hover:ring-2 group-hover:ring-[#1a1a1a]/50 transition-all duration-300"></div>
 
-        {/* Content Overlay */}
-        <div className="absolute inset-0 flex flex-col justify-end p-4 sm:p-5">
+        {/* Content Overlay - 画像読み込み後に表示 */}
+        {imageLoaded && (
+          <div className="absolute inset-0 flex flex-col justify-end p-4 sm:p-5">
           {/* Category Badge */}
           <div className="mb-3 opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300">
             <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold tracking-wide backdrop-blur-md bg-gradient-to-r from-[#000000] to-[#1a1a1a] text-white shadow-lg">
@@ -79,11 +84,14 @@ export default function EncyclopediaCard({ post, priority = false }: Encyclopedi
             </div>
           </div>
         </div>
+        )}
 
         {/* Hover Glow Effect */}
-        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
-          <div className="absolute inset-0 rounded-2xl shadow-[0_0_40px_rgba(233,30,99,0.4)]"></div>
-        </div>
+        {imageLoaded && (
+          <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
+            <div className="absolute inset-0 rounded-2xl shadow-[0_0_40px_rgba(233,30,99,0.4)]"></div>
+          </div>
+        )}
       </article>
     </Link>
   )
