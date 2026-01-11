@@ -1,0 +1,12 @@
+# グラビア図鑑 - Robots.txt
+# 全ての検索エンジンボットを許可
+
+User-agent: *
+Allow: /
+
+# サイトマップの場所（公開時に実際のドメインに変更してください）
+Sitemap: https://your-domain.com/sitemap.xml
+
+# クロール速度の制限（オプション）
+# 検索エンジンに優しく、サーバー負荷を軽減
+Crawl-delay: 1
